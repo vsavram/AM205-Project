@@ -84,10 +84,12 @@ class Feedforward:
         W = weights[index:index + H * D_out].T.reshape((-1, D_out, H))
         b = weights[index + H * D_out:].T.reshape((-1, D_out, 1))
         output = np.matmul(W, input) + b
-        assert output.shape[1] == self.params['D_out']
+        assert output.shape[1] == D_out
 
         #last hidden layer
         final_layer = np.array(input,copy = True)
+
+        self.current_output = output
 
         if final_layer_out:
             return final_layer
@@ -111,6 +113,8 @@ class Feedforward:
     def fit(self, x_train, y_train, params, reg_param=None):
 
         assert x_train.shape[0] == self.params['D_in']
+
+        # this assert statement is no longer true (aux functions). rip
         #assert y_train.shape[0] == self.params['D_out']
 
         ### make objective function for training

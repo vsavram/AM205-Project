@@ -10,8 +10,7 @@ import sys
 
 
 def get_bayes_lr_posterior(prior_var, noise_var, x_matrix, y_matrix, samples=100):
-    '''Generates posterior samples for Bayesian linear regression model coefficients
-    '''
+    '''Generates posterior samples for Bayesian linear regression model coefficients'''
     prior_variance = np.diag(prior_var * np.ones(x_matrix.shape[1])) # make it 2 D
     prior_precision = np.linalg.inv(prior_variance)
 
@@ -52,4 +51,5 @@ def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title):
     plt.scatter(x_train, y_train, color='black', label='training data') # visualize the training data
     plt.legend()
     plt.title(title)
+    plt.set_ylim([0.9*y_train.min(), 1.1*y_train.max()])
     plt.show()
