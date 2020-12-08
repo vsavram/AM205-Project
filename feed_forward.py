@@ -165,14 +165,36 @@ class Feedforward:
         # AM205 CREW: gradient is used here
         for i in range(random_restarts):
 
-            # this is the default
+            # The default optimizer is Adam
+            # This is where we will use numerical methods for finding the minimum of the objective function
             if optimizer == 'adam':
                 adam(opt_gradient, weights_init, step_size=step_size, num_iters=max_iteration, callback=call_back)
+                local_opt = np.min(self.objective_trace[-100:])
+                if local_opt < optimal_obj:
+                    opt_index = np.argmin(self.objective_trace[-100:])
+                    self.weights = self.weight_trace[-100:][opt_index].reshape((1, -1))
+            elif optimizer == 'steepest':
+                optimal_weights = steepest_descent(self.objective, weights_init, min_step_size=10**(-8), max_iter=2000)
+                local_opt = self.objective(optimal_weights, 1)
+                if local_opt < optimal_obj:
+                    self.weights = optimal_weights.reshape((1, -1))
+            elif optimizer == 'newton':
+                optimal_weights = newton_method(self.objective, weights_init, min_step_size=10**(-8), max_iter=2000)
+                local_opt = self.objective(optimal_weights, 1)
+                if local_opt < optimal_obj:
+                    self.weights = optimal_weights.reshape((1, -1))
+            elif optimizer == 'BFGS':
+                optimal_weights = BFGS(self.objective, weights_init, min_step_size=10**(-8), max_iter=2000)
+                local_opt = self.objective(optimal_weights, 1)
+                if local_opt < optimal_obj:
+                    self.weights = optimal_weights.reshape((1, -1))
+            elif optimizer == 'conjugate':
+                optimal_weights = conjugate_gradient(self.objective, weights_init, min_step_size=10**(-8), max_iter=2000)
+                local_opt = self.objective(optimal_weights, 1)
+                if local_opt < optimal_obj:
+                    self.weights = optimal_weights.reshape((1, -1))
             
-            local_opt = np.min(self.objective_trace[-100:])
-            if local_opt < optimal_obj:
-                opt_index = np.argmin(self.objective_trace[-100:])
-                self.weights = self.weight_trace[-100:][opt_index].reshape((1, -1))
+
             weights_init = self.random.normal(0, 1, size=(1, self.D))
 
         self.objective_trace = self.objective_trace[1:]
