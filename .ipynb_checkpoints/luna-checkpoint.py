@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import sys
 
 # import our libraries
-from utils import cos_sim_sq
+# from utils import cos_sim_sq
 from nlm import NLM
 
 
@@ -30,8 +30,9 @@ class LUNA(NLM):
      
       - run predict() to get distribution of ys, given x test
     """
-
-    def __init__(self, prior_var, y_noise_var, regularization_param, similarity_param, architecture, random, grad_func = None):
+    
+    
+    def __init__(self, prior_var, y_noise_var, regularization_param, similarity_param, architecture, random, grad_func_specs = None):
         '''
         Important attributes:
         
@@ -46,10 +47,10 @@ class LUNA(NLM):
 
         
         # override default finite difference method for cosine similarity calc (see cos_sim_sq function)
-        if grad_func:
-            self.grad_func = grad_func
-        else:
-            self.grad_func = self.default_finite_diff
+        #         if grad_func_specs:
+        #             self.grad_func_specs = grad_func_specs
+        #         else:
+        #             self.grad_func = self.default_finite_diff
 
         self.similarity_param = similarity_param
 
@@ -83,8 +84,13 @@ class LUNA(NLM):
             grad_i = holy_grail[:,i,:]
             for j in range(i + 1, self.D_out):
                 grad_j = holy_grail[:,j,:]
-                score += cos_sim_sq(grad_i, grad_j)
+                score += self.cos_sim_sq(grad_i, grad_j)
         return score
+
+    def cos_sim_sq(self,grad_i, grad_j):
+        numer = np.dot(grad_i, grad_j.T)**2
+        denom = (np.dot(grad_i,grad_i.T)*np.dot(grad_j,grad_j.T))
+        return (numer/denom)[0][0]
 
     def default_finite_diff(self,W,x):
         '''
@@ -96,7 +102,9 @@ class LUNA(NLM):
 
                 i.e. for each auxillary function and for each observation, approximate the gradient with dimension x.shape[0]
         '''
-        
+        #if "fixed" in grad_func_spec:
+            #esp = grad_func_spec["fixed"] = 0.0001
+        #else:    
         #create one epsilon for each observation
         eps = np.random.normal(0,0.1,size=x.shape[1])
 

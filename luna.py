@@ -30,8 +30,9 @@ class LUNA(NLM):
      
       - run predict() to get distribution of ys, given x test
     """
-
-    def __init__(self, prior_var, y_noise_var, regularization_param, similarity_param, architecture, random, grad_func = None):
+    
+    
+    def __init__(self, prior_var, y_noise_var, regularization_param, similarity_param, architecture, random, grad_func_specs = None):
         '''
         Important attributes:
         
@@ -46,10 +47,10 @@ class LUNA(NLM):
 
         
         # override default finite difference method for cosine similarity calc (see cos_sim_sq function)
-        if grad_func:
-            self.grad_func = grad_func
-        else:
-            self.grad_func = self.default_finite_diff
+        #         if grad_func_specs:
+        #             self.grad_func_specs = grad_func_specs
+        #         else:
+        #             self.grad_func = self.default_finite_diff
 
         self.similarity_param = similarity_param
 
@@ -101,7 +102,9 @@ class LUNA(NLM):
 
                 i.e. for each auxillary function and for each observation, approximate the gradient with dimension x.shape[0]
         '''
-        
+        #if "fixed" in grad_func_spec:
+            #esp = grad_func_spec["fixed"] = 0.0001
+        #else:    
         #create one epsilon for each observation
         eps = np.random.normal(0,0.1,size=x.shape[1])
 

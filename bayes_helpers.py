@@ -32,7 +32,9 @@ def get_bayes_lr_posterior_predictives(noise_var,posterior_samples,x_test_matrix
 
     '''
     posterior_predictions = np.dot(posterior_samples, x_test_matrix.T) 
+    
     posterior_predictive_samples = posterior_predictions[np.newaxis, :, :] + np.random.normal(0, noise_var**0.5, size=(samples, posterior_predictions.shape[0], posterior_predictions.shape[1]))
+    
     posterior_predictive_samples = posterior_predictive_samples.reshape((samples * posterior_predictions.shape[0], posterior_predictions.shape[1]))
     return posterior_predictions, posterior_predictive_samples
 
