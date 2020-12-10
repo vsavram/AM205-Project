@@ -46,11 +46,11 @@ class LUNA(NLM):
         '''
 
         
-        # override default finite difference method for cosine similarity calc (see cos_sim_sq function)
-        #         if grad_func_specs:
-        #             self.grad_func_specs = grad_func_specs
-        #         else:
-        #             self.grad_func = self.default_finite_diff
+        #override default finite difference method for cosine similarity calc (see cos_sim_sq function)
+#                 if grad_func_specs:
+#                     self.grad_func_specs = grad_func_specs
+#                 else:
+#                     self.grad_func = self.default_finite_diff
 
         self.similarity_param = similarity_param
 
@@ -76,7 +76,7 @@ class LUNA(NLM):
         score = 0
 
         #derivs of all the aux funcs
-        holy_grail = self.grad_func(W, x)
+        holy_grail = self.default_finite_diff(W, x)
 
         # in dim x out dim x # obs
         M = holy_grail.shape[1]
