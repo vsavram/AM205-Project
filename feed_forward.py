@@ -196,6 +196,7 @@ class Feedforward:
             
 
             weights_init = self.random.normal(0, 1, size=(1, self.D))
-
-        self.objective_trace = self.objective_trace[1:]
-        self.weight_trace = self.weight_trace[1:]
+        
+        if optimizer == 'adam':
+            self.objective_trace = self.objective_trace[1:]
+            self.weight_trace = self.weight_trace[1:]
