@@ -99,7 +99,7 @@ class Feedforward:
     """Default objective Neural network function"""
     def default_make_objective(self, x_train, y_train, reg_param):
 
-        def objective(W, t=1.):
+        def objective(W, t):
             squared_error = np.linalg.norm(y_train - self.forward(W, x_train), axis=1)**2
             if reg_param is None:
                 sum_error = np.sum(squared_error)
@@ -124,7 +124,7 @@ class Feedforward:
         ### set up optimization
         step_size = 0.01
         max_iteration = 5000
-        check_point = 100
+        check_point = 2
         weights_init = self.weights.reshape((1, -1))
         mass = None
         optimizer = 'adam' # DEFAULT. CHANGE IN PARAMS
@@ -145,7 +145,7 @@ class Feedforward:
             mass = params['mass']
         if 'optimizer' in params.keys():
             optimizer = params['optimizer']
-        if  'opt_gradient' in params.keys():
+        if 'opt_gradient' in params.keys():
             gradient = params['opt_gradient']
         if 'random_restarts' in params.keys():
             random_restarts = params['random_restarts']
@@ -162,40 +162,17 @@ class Feedforward:
         optimal_obj = 1e16
         optimal_weights = self.weights
 
+        # AM205 CREW: gradient is used here
         for i in range(random_restarts):
-
-            # The default optimizer is Adam
-            # This is where we will use numerical methods for finding the minimum of the objective function
+            print('doing a random restart')
+            # this is the default
             if optimizer == 'adam':
                 adam(opt_gradient, weights_init, step_size=step_size, num_iters=max_iteration, callback=call_back)
-                local_opt = np.min(self.objective_trace[-100:])
-                if local_opt < optimal_obj:
-                    opt_index = np.argmin(self.objective_trace[-100:])
-                    self.weights = self.weight_trace[-100:][opt_index].reshape((1, -1))
-            elif optimizer == 'steepest':
-                optimal_weights = steepest_descent(self.objective, weights_init, min_step_size=10**(-8), max_iter=2000)
-                local_opt = self.objective(optimal_weights, 1)
-                if local_opt < optimal_obj:
-                    self.weights = optimal_weights.reshape((1, -1))
-            elif optimizer == 'newton':
-                optimal_weights = newton_method(self.objective, weights_init, min_step_size=10**(-8), max_iter=2000)
-                local_opt = self.objective(optimal_weights, 1)
-                if local_opt < optimal_obj:
-                    self.weights = optimal_weights.reshape((1, -1))
-            elif optimizer == 'BFGS':
-                optimal_weights = BFGS(self.objective, weights_init, min_step_size=10**(-8), max_iter=2000)
-                local_opt = self.objective(optimal_weights, 1)
-                if local_opt < optimal_obj:
-                    self.weights = optimal_weights.reshape((1, -1))
-            elif optimizer == 'conjugate':
-                optimal_weights = conjugate_gradient(self.objective, weights_init, min_step_size=10**(-8), max_iter=2000)
-                local_opt = self.objective(optimal_weights, 1)
-                if local_opt < optimal_obj:
-                    self.weights = optimal_weights.reshape((1, -1))
-            
-
+            local_opt = np.min(self.objective_trace[-100:])
+            if local_opt < optimal_obj:
+                opt_index = np.argmin(self.objective_trace[-100:])
+                self.weights = self.weight_trace[-100:][opt_index].reshape((1, -1))
             weights_init = self.random.normal(0, 1, size=(1, self.D))
-        
-        if optimizer == 'adam':
-            self.objective_trace = self.objective_trace[1:]
-            self.weight_trace = self.weight_trace[1:]
+
+        self.objective_trace = self.objective_trace[1:]
+        self.weight_trace = self.weight_trace[1:]

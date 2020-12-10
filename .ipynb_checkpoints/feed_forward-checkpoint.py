@@ -162,6 +162,7 @@ class Feedforward:
         optimal_obj = 1e16
         optimal_weights = self.weights
 
+        # AM205 CREW: gradient is used here
         for i in range(random_restarts):
 
             # The default optimizer is Adam
