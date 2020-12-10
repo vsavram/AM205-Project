@@ -51,5 +51,17 @@ def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title):
     plt.scatter(x_train, y_train, color='black', label='training data') # visualize the training data
     plt.legend()
     plt.title(title)
-    plt.set_ylim([0.9*y_train.min(), 1.1*y_train.max()])
+    plt.ylim([0.9*y_train.min(), 1.1*y_train.max()])
     plt.show()
+
+def get_percentile_interval(posterior_predictive_samples):
+    # Compute the 97.5 th percentile of the posterior predictive predictions
+    pp_upper = np.percentile(posterior_predictive_samples, 97.5, axis=0)
+
+    # Compute the 2.5 th percentile of the posterior predictive predictions
+    pp_lower = np.percentile(posterior_predictive_samples, 2.5, axis=0)
+
+    # Compute the 50 th percentile of the posterior predictive predictions
+    pp_mean = np.mean(posterior_predictive_samples, axis=0).reshape((1,-1))
+
+    return pp_lower, pp_mean, pp_upper

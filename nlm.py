@@ -31,22 +31,20 @@ class NLM():
      
       - run predict() to get distribution of ys, given x test
     """
-    def __init__(self, prior_var, y_noise_var, architecture, random_state, objective_function=None):
+    def __init__(self, prior_var, y_noise_var, regularization_param, architecture, random_state, objective_function=None):
 
         self.ff = Feedforward(architecture, random = random_state, objective_function=objective_function)
-        
+        self.regularization_param = regularization_param
         self.prior_var = prior_var # prior variance final layer weights
         self.y_noise_var = y_noise_var # variance of noise, distributed normally
 
     def train(self, X, Y, params):
-        
         # Fit Weights
         self.ff.fit(X, Y, params)
 
         # Transform X with Feature Map for Bayes Reg
             # i.e. returns last layer by setting final_layer_out to True
         final_layer = self.ff.forward(self.ff.weights, X, final_layer_out=True)
-        
         # Conduct Bayes Reg on Final Layer 
         self.posterior_samples = bh.get_bayes_lr_posterior(self.prior_var,
                                                         self.y_noise_var,
