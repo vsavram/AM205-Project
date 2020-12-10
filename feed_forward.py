@@ -99,7 +99,7 @@ class Feedforward:
     """Default objective Neural network function"""
     def default_make_objective(self, x_train, y_train, reg_param):
 
-        def objective(W, t):
+        def objective(W, t=1.):
             squared_error = np.linalg.norm(y_train - self.forward(W, x_train), axis=1)**2
             if reg_param is None:
                 sum_error = np.sum(squared_error)

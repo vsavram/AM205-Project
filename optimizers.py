@@ -8,6 +8,7 @@ from autograd import scipy as sp
 import autograd.numpy.random as npr
 import pandas as pd
 import numpy
+from scipy.optimize import minimize_scalar
 
 # Perform steepest descent and iterate until the step size becomes small enough
 def steepest_descent(objective_function, initial_W, min_step_size=10**(-8), max_iter=2000):
@@ -18,13 +19,15 @@ def steepest_descent(objective_function, initial_W, min_step_size=10**(-8), max_
     # Define the starting point (the initial values for the weights and bias terms)
     W = initial_W
     
+    # Define the gradient function
+    gradient = grad(objective_function)
+    
     while np.abs(step_size) > min_step_size and current_iteration < max_iter:
         
         previous_W = W
         
         # Determine the gradient of the objective function using autograd
-        gradient = grad(objective_function)
-        W_grad = gradient(previous_W)
+        W_grad = gradient(np.array(previous_W))
         
         # Determine the learning rate for the update using a line search
         alpha = minimize_scalar(lambda alpha: objective_function(previous_W - alpha*W_grad))
@@ -43,7 +46,7 @@ def steepest_descent(objective_function, initial_W, min_step_size=10**(-8), max_
 
 
 # Perform Newton's method and iterate until the step size becomes small enough
-def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_iter):
+def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_iter=2000):
     
     current_iteration = 0
     step_size = 1
@@ -51,17 +54,20 @@ def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_ite
     # Define the starting point and learning rate
     W = initial_W
     
+    # Define the gradient function
+    gradient = grad(objective_function)
+    # Define the Hessian function
+    hessian_function = hessian(objective_function)
+    
     while np.abs(step_size) > min_step_size and current_iteration < max_iter:
         
         previous_W = W
         
         # Compute the gradient
-        gradient = grad(objective_function)
-        W_grad = gradient(previous_W, 1)
+        W_grad = gradient(previous_W)
         
         # Compute the Hessian
-        hessian_function = hessian(objective_function)
-        W_hessian = hessian_function(previous_W, 1)
+        W_hessian = hessian_function(np.array(previous_W))
         
         # Solve the system of equations for the step size
         step = np.linalg.solve(W_hessian, -W_grad)
@@ -77,11 +83,11 @@ def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_ite
 
 
 # Perform the BFGS algorithm and iterate until the step size becomes small enough
-def BFGS(objective_function, initial_W, min_step_size=10**(-8), max_iter):
+def BFGS(objective_function, initial_W, min_step_size=10**(-8), max_iter=2000):
     
     current_iteration = 0
     step_size = 1
-    beta = np.eye(2)
+    beta = np.eye(len(initial_W))
     
     # Define the starting point and learning rate
     W = initial_W
@@ -94,7 +100,7 @@ def BFGS(objective_function, initial_W, min_step_size=10**(-8), max_iter):
         previous_W = W
         
         # Compute the gradient
-        W_grad = gradient(previous_W, 1)
+        W_grad = gradient(previous_W)
         
         # Solve the system of equations for the step size
         step = np.linalg.solve(beta, -W_grad)
@@ -105,7 +111,7 @@ def BFGS(objective_function, initial_W, min_step_size=10**(-8), max_iter):
         step_size = np.linalg.norm(step)
         
         # Compute the gradient for the updated values and compute delta gradient
-        updated_gradient = gradient(previous_W, 1)
+        updated_gradient = gradient(np.array(W))
         delta_gradient = updated_gradient - W_grad
         
         # Compute delta beta
@@ -122,7 +128,7 @@ def BFGS(objective_function, initial_W, min_step_size=10**(-8), max_iter):
 
 
 # Perform the conjugate gradient method and iterate until the step size becomes small enough
-def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), max_iter):
+def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), max_iter=2000):
     
     current_iteration = 0
     step_size = 1
@@ -131,7 +137,7 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
     gradient = grad(objective_function)
     
     # Compute the gradient
-    W_grad = gradient(initial_W, 1) 
+    W_grad = gradient(np.array(initial_W)) 
     # Define the starting point
     W = -W_grad
     
@@ -151,15 +157,17 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
         W = W + alpha*s
         
         # Compute the new gradient
-        W_grad = gradient(initial_W, 1) 
+        W_grad = gradient(np.array(W)) 
         # Reshape the gradient array
         W_grad = W_grad.reshape(len(delta_gradient),1)
         
         # Compute beta
         beta = np.dot(W_grad.T,W_grad)/np.dot(W_grad_previous.T,W_grad_previous)
+        beta = beta[0][0]
         
         # Update the value for s
         s = -W_grad.flatten() + beta*s
+        s = s[0]
         
         # Determine the step size
         delta_W = W - previous_W
@@ -170,8 +178,33 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
     return W
 
 
-def test_function(inputs):
+def test_function(inputs, t=1.):
     return np.power(inputs[0],3) + 4*np.exp(inputs[1]) + 10*np.power(inputs[2],4)
+
+def test_function2(x, t=1.):
+    return x[0]**2 + 3*x[0] + 1
 
 hessian_function = hessian(test_function)
 W_hessian = hessian_function((10.,2.,1.))
+
+def f(inputs):
+    return inputs[0]**2 + 3*np.sin(inputs[1]**3)/inputs[2]
+
+gradient = grad(f)
+f_grad = gradient(np.array([3.,10.,2.]))
+
+hessian_function = hessian(f)
+f_hessian = hessian_function(np.array([10.,2.,1.]))
+    
+
+# Test steepest descent
+solution = steepest_descent(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
+
+# Test Newton's method
+solution = newton_method(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
+
+# Test BFGS
+solution = BFGS(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
+
+# Test the conjugate gradient method
+solution = conjugate_gradient(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
