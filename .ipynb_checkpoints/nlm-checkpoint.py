@@ -40,7 +40,7 @@ class NLM():
 
     def train(self, X, Y, params):
         # Fit Weights
-        self.ff.fit(X, Y, params)
+        self.ff.fit(X, Y, params, self.regularization_param)
 
         # Transform X with Feature Map for Bayes Reg
             # i.e. returns last layer by setting final_layer_out to True
@@ -54,10 +54,21 @@ class NLM():
 
         print("\nDone Training")
     
-    def predict(self,X_test):
+    def predict(self,X_test,prior=False):
+        
+        # make it so this returns prior predictive stuff too
 
         # forward pass up to last layer
         final_layer = self.ff.forward(self.ff.weights, X_test, final_layer_out=True)
         
+        # get prior samples
+        if prior:
+            prior_samples = bh.get_prior_samples(final_layer.T[:,:,0], self.prior_var, samples=100)
+            
+            prior_predictives = get_bayes_lr_predictives(noise_var,prior_samples,x_test_matrix,samples=100)
+        else:
+            prior_samples = None
+        
+        posterior_predictives, 
         # get posterior predictives, posterior of final layer weights
-        return bh.get_bayes_lr_posterior_predictives(self.y_noise_var,self.posterior_samples,final_layer.T[:,:,0])
+        return bh.get_bayes_lr_posterior_predictives(self.y_noise_var, self.posterior_samples,final_layer.T[:,:,0],prior_samples=prior_samples)
