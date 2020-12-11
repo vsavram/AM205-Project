@@ -177,7 +177,7 @@ class Feedforward:
                     opt_index = np.argmin(self.objective_trace[-100:])
                     self.weights = self.weight_trace[-100:][opt_index].reshape((1, -1))
             else:
-                optimal_weights = optimizer(self.objective, weights_init, min_step_size=10**(-8), max_iter)
+                optimal_weights = optimizer(self.objective, weights_init, min_step_size=10**(-8), max_iter=max_iteration)
                 local_opt = self.objective(optimal_weights, 1.)
                 if local_opt < optimal_obj:
                     self.weights = optimal_weights.reshape((1, -1))
