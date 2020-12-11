@@ -34,23 +34,22 @@ class LUNA(NLM):
     
     def __init__(self, prior_var, y_noise_var, regularization_param, similarity_param, architecture, random, grad_func_specs = None):
         '''
-        Important attributes:
         
-        All the NLM attributes
-
-        NN attributes:
+        Input attributes:
+         - prior_var: variance on weights for last layer (the bayesian part of the NLM)
+         - y_noise_var: variance of epsilon, given our model is Y = wX + \eps where \eps ~ N(0,y_noise_var)
+         - regularization_param: scalar to regularlize the NLM part of the objective function
+         - architecture: specifies the feed forward archicture, and no other aspects of the model
+         - random: sets a random state
+         - grad_func_specs: dictionary to specify how to conduct default_finite_differences
+        
+        
+        NN attributes pulled from the super().__init__:
             self.D = not exactly sure...
             self.D_in = dimensionality of input data
             self.D_out = dimensionality of output data
             self.H = width of a layer in the NN
         '''
-
-        
-        #override default finite difference method for cosine similarity calc (see cos_sim_sq function)
-#                 if grad_func_specs:
-#                     self.grad_func_specs = grad_func_specs
-#                 else:
-#                     self.grad_func = self.default_finite_diff
 
         self.similarity_param = similarity_param
 
@@ -58,6 +57,8 @@ class LUNA(NLM):
         super().__init__(prior_var, y_noise_var, regularization_param, architecture, random, self.make_objective) 
         
         self.D, self.D_in, self.D_out, self.H = self.ff.D, architecture['input_dim'], architecture['output_dim'], architecture['width']
+        
+        self.grad_func_specs = grad_func_specs
   
     def similarity_score(self, W, x):
         '''
@@ -80,6 +81,8 @@ class LUNA(NLM):
 
         # in dim x out dim x # obs
         M = holy_grail.shape[1]
+        
+        # conduct compare each pair of aux functions
         for i in range(self.D_out):
             grad_i = holy_grail[:,i,:]
             for j in range(i + 1, self.D_out):
@@ -102,9 +105,7 @@ class LUNA(NLM):
 
                 i.e. for each auxillary function and for each observation, approximate the gradient with dimension x.shape[0]
         '''
-        #if "fixed" in grad_func_spec:
-            #esp = grad_func_spec["fixed"] = 0.0001
-        #else:    
+        
         #create one epsilon for each observation
         eps = np.random.normal(0,0.1,size=x.shape[1])
 

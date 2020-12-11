@@ -34,8 +34,9 @@ def get_bayes_lr_posterior(prior_var, noise_var, x_matrix, y_matrix, samples=100
 
     return posterior_samples
 
-#michael drafting the code
 # samples either come from prior or posterior distribution
+# predictions: predicts each X_test obs on each sample coefficient from samples
+# predictive_samples: samples from each prediction distribution, randomness comes from noise var
 def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100):
 
     # calculate predictions and predictive samples
@@ -45,35 +46,6 @@ def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100):
     predictive_samples = predictive_samples.reshape((n * predictions.shape[0], predictions.shape[1]))
 
     return predictions, predictive_samples
-
-# TO DEPRECATE
-def get_bayes_lr_posterior_predictives(noise_var,posterior_samples,x_test_matrix,samples=100,prior_samples=None):
-    '''Generates posterior predictions and posterior predictive samples given
-    Bayesian linear regression model coefficent posterior distribution. If prior samples are provided,
-    generates prior predictions and prior predictive samples as well.
-
-    posterior_predictions: predicts each X_test obs on each sample coefficient from posterior_samples
-    posterior_predictive_samples: samples from each posterior_prediction distribution, randomness comes from noise var
-    prior_predictions: predicts each X_test obs on each sample coefficient from prior_samples
-    predictive_samples: samples from each prior_prediction distribution, randomness comes from noise var
-
-    '''
-    # calculate posterior predictions and predictive samples
-    posterior_predictions = np.dot(posterior_samples, x_test_matrix.T)
-
-    posterior_predictive_samples = posterior_predictions[np.newaxis, :, :] + np.random.normal(0, noise_var**0.5, size=(samples, posterior_predictions.shape[0], posterior_predictions.shape[1]))
-
-    posterior_predictive_samples = posterior_predictive_samples.reshape((samples * posterior_predictions.shape[0], posterior_predictions.shape[1]))
-
-    # calculate prior predictions and predictive samples
-    if prior_samples is None:
-        return posterior_predictions, posterior_predictive_samples
-    else:
-        prior_predictions = np.dot(prior_samples, x_test_matrix.T)
-        prior_predictive_samples = prior_predictions[np.newaxis, :, :] + np.random.normal(0, noise_var**0.5, size=(samples, prior_predictions.shape[0], prior_predictions.shape[1]))
-        prior_predictive_samples = prior_predictive_samples.reshape((samples * prior_predictions.shape[0], prior_predictions.shape[1]))
-
-        return posterior_predictions, posterior_predictive_samples, prior_predictions, prior_predictive_samples
 
 def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title):
     # Compute the 97.5 th percentile of the posterior predictive predictions
