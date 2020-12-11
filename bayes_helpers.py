@@ -9,6 +9,17 @@ import matplotlib.pyplot as plt
 import sys
 
 
+def get_prior_samples(prior_var, prior_mean=0, x_matrix, samples=100):
+    '''Generates prior samples for Bayesian linear regression model coefficients'''
+    
+    prior_variance = np.diag(prior_var * np.ones(x_matrix.shape[1])) # make it 2 D
+    prior_mean = prior_mean*np.ones(x_matrix.shape[1])
+    
+    # sample weights from prior
+    prior_samples = np.random.multivariate_normal(prior_mean, prior_variance, size=samples)
+    
+    return prior_samples
+
 def get_bayes_lr_posterior(prior_var, noise_var, x_matrix, y_matrix, samples=100):
     '''Generates posterior samples for Bayesian linear regression model coefficients'''
     prior_variance = np.diag(prior_var * np.ones(x_matrix.shape[1])) # make it 2 D
