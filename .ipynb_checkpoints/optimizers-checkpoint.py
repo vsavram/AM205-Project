@@ -26,7 +26,7 @@ def steepest_descent(objective_function, initial_W, min_step_size=10**(-8), max_
         previous_W = W
         
         # Determine the gradient of the objective function using autograd
-        W_grad = gradient(np.array(previous_W))
+        W_grad = gradient(previous_W)
         
         # Determine the learning rate for the update using a line search
         alpha = minimize_scalar(lambda alpha: objective_function(previous_W - alpha*W_grad))
@@ -62,11 +62,17 @@ def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_ite
         
         previous_W = W
         
+        print(previous_W.shape)
+        
         # Compute the gradient
         W_grad = gradient(previous_W)
         
+        print(W_grad.shape)
+        
         # Compute the Hessian
         W_hessian = hessian_function(np.array(previous_W))
+        
+        print(W_hessian.shape)
         
         # Solve the system of equations for the step size
         step = np.linalg.solve(W_hessian, -W_grad)
@@ -136,10 +142,10 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
     gradient = grad(objective_function)
     
     # Compute the gradient
-    W_grad = gradient(np.array(initial_W)) 
+    W_grad = gradient(initial_W)
     # Define the starting point
     W = -W_grad
-    
+
     # Set the initial value for s
     s = -W_grad
     
@@ -149,14 +155,14 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
         W_grad_previous = W_grad
         
         # Determine the learning rate for the update using a line search
-        alpha = minimize_scalar(lambda alpha: objective_function(previous_W - alpha*s))
+        alpha = minimize_scalar(lambda alpha: objective_function(previous_W + alpha*s))
         alpha = alpha.x
         
         # Update the values for x and y
         W = W + alpha*s
         
         # Compute the new gradient
-        W_grad = gradient(np.array(W)) 
+        W_grad = gradient(W)
         # Reshape the gradient array
         W_grad = W_grad.reshape(len(W_grad),1)
         
@@ -166,7 +172,6 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
         
         # Update the value for s
         s = -W_grad.flatten() + beta*s
-        s = s[0]
         
         # Determine the step size
         delta_W = W - previous_W
@@ -175,49 +180,3 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
         current_iteration = current_iteration + 1
     
     return W
-
-
-
-
-def test_function(inputs, t=1.):
-    return np.power(inputs[0],3) + 4*np.exp(inputs[1]) + 10*np.power(inputs[2],4)  
-
-def test_function2(x, t=1.):
-    return x[0]**2 + 3*x[0] + 1
-
-def test_function3(inputs):
-    return -np.exp(-(inputs[0]**2 + inputs[1]**2))
-
-if __name__== '__main__':
-    # Test steepest descent
-    solution = steepest_descent(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
-    print(solution)
-
-    # Test Newton's method
-    solution = newton_method(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
-    print(solution)
-
-    # Test BFGS
-    solution = BFGS(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
-    print(solution)
-
-    # Test the conjugate gradient method
-    solution = conjugate_gradient(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
-    print(solution)
-
-
-    # Test steepest descent
-    solution = steepest_descent(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
-    print(solution)
-
-    # Test Newton's method
-    solution = newton_method(test_function3, np.array([10., 5.]), min_step_size=10**(-8), max_iter=2000)
-    print(solution)
-
-    # Test BFGS
-    solution = BFGS(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
-    print(solution)
-
-    # Test the conjugate gradient method
-    solution = conjugate_gradient(test_function3, np.array([10.,5.]), min_step_size=10**(-8), max_iter=2000)
-    print(solution)

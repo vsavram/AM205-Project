@@ -62,11 +62,17 @@ def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_ite
         
         previous_W = W
         
+        print(previous_W.shape)
+        
         # Compute the gradient
         W_grad = gradient(previous_W)
         
+        print(W_grad.shape)
+        
         # Compute the Hessian
         W_hessian = hessian_function(np.array(previous_W))
+        
+        print(W_hessian.shape)
         
         # Solve the system of equations for the step size
         step = np.linalg.solve(W_hessian, -W_grad)
