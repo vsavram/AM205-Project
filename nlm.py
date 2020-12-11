@@ -54,21 +54,18 @@ class NLM():
 
         print("\nDone Training")
     
-    def predict(self,X_test):
+    def predict(self,X_test,prior=False):
+        
+        # make it so this returns prior predictive stuff too
 
         # forward pass up to last layer
         final_layer = self.ff.forward(self.ff.weights, X_test, final_layer_out=True)
         
-        # get posterior predictives, posterior of final layer weights
-        return bh.get_bayes_lr_posterior_predictives(self.y_noise_var,self.posterior_samples,final_layer.T[:,:,0])
-    
-    def get_prior_predictive(self,X_test):
-
-        # forward pass up to last layer
-        final_layer = self.ff.forward(self.ff.weights, X_test, final_layer_out=True)
-       
         # get prior samples
-        prior_samples = bh.get_prior_samples(self.prior_var, prior_mean=0, final_layer.T[:,:,0], samples=100)
-        
+        if prior:
+            prior_samples = bh.get_prior_samples(final_layer.T[:,:,0], self.prior_var, samples=100)
+        else:
+            prior_samples = None
+            
         # get posterior predictives, posterior of final layer weights
-        return bh.get_bayes_lr_posterior_predictives(self.y_noise_var,prior_samples,final_layer.T[:,:,0])
+        return bh.get_bayes_lr_posterior_predictives(self.y_noise_var,self.posterior_samples,final_layer.T[:,:,0],prior_samples=prior_samples)
