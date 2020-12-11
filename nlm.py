@@ -18,17 +18,17 @@ import bayes_helpers as bh
 class NLM():
     """
     Fits NLM Model
-    
+
     Model Assumptions
      - Weights distributed normally
      - Ys distributed normally
 
 
      How to use:
-      - run train() to create: 
-            a) the NN MLE weights, found in self.ff.weights 
+      - run train() to create:
+            a) the NN MLE weights, found in self.ff.weights
             b) self.posterior samples, the distribution for the weights in the last layer of NLM
-     
+
       - run predict() to get distribution of ys, given x test
     """
     def __init__(self, prior_var, y_noise_var, regularization_param, architecture, random_state, objective_function=None):
@@ -45,27 +45,53 @@ class NLM():
         # Transform X with Feature Map for Bayes Reg
             # i.e. returns last layer by setting final_layer_out to True
         final_layer = self.ff.forward(self.ff.weights, X, final_layer_out=True)
-        # Conduct Bayes Reg on Final Layer 
+        # Conduct Bayes Reg on Final Layer
         self.posterior_samples = bh.get_bayes_lr_posterior(self.prior_var,
                                                         self.y_noise_var,
-                                                        final_layer.T[:,:,0], 
+                                                        final_layer.T[:,:,0],
                                                         Y.T,
                                                         samples=100)
 
         print("\nDone Training")
-    
+
     def predict(self,X_test,prior=False):
-        
+
         # make it so this returns prior predictive stuff too
 
         # forward pass up to last layer
         final_layer = self.ff.forward(self.ff.weights, X_test, final_layer_out=True)
-        
-        # get prior samples
+
+
+        # return prior predictives and prior predictive samples
         if prior:
             prior_samples = bh.get_prior_samples(final_layer.T[:,:,0], self.prior_var, samples=100)
+            return bh.get_bayes_lr_predictives(self.y_noise_var,
+                                                prior_samples,
+                                                final_layer.T[:,:,0],
+                                                n=100)
+
+        # return posterior predictives and posterior predictive samples
         else:
-            prior_samples = None
-            
-        # get posterior predictives, posterior of final layer weights
-        return bh.get_bayes_lr_posterior_predictives(self.y_noise_var,self.posterior_samples,final_layer.T[:,:,0],prior_samples=prior_samples)
+            return  bh.get_bayes_lr_predictives(self.y_noise_var,
+                                                self.posterior_samples,
+                                                final_layer.T[:,:,0],
+                                                n=100)
+
+if __name__ == "__main__":
+    # test
+    prior_var = .1
+    y_var = 1.0
+    regularization_param_nlm = 10
+    test_nlm = NLM(prior_var,y_var, regularization_param_nlm,architecture, random_state = np.random.RandomState(0))
+
+    params = {'step_size':1e-3,
+          'max_iteration':500,
+          'random_restarts':1,
+          'optimizer':'adam'}
+
+    t0 = time.time()
+    test_nlm.train(x_train,y_train, params)
+    nlm_time = np.round(time.time() - t0, 3)
+    print(f"{nlm_time} Seconds")
+
+    posterior_predictives, posterior_predictive_samples = test_nlm.predict(x_test)

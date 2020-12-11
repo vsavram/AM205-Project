@@ -11,13 +11,13 @@ import sys
 
 def get_prior_samples(x_matrix, prior_var, prior_mean=0, samples=100):
     '''Generates prior samples for Bayesian linear regression model coefficients'''
-    
+
     prior_variance = np.diag(prior_var * np.ones(x_matrix.shape[1])) # make it 2 D
     prior_mean = prior_mean*np.ones(x_matrix.shape[1])
-    
+
     # sample weights from prior
     prior_samples = np.random.multivariate_normal(prior_mean, prior_variance, size=samples)
-    
+
     return prior_samples
 
 def get_bayes_lr_posterior(prior_var, noise_var, x_matrix, y_matrix, samples=100):
@@ -25,7 +25,7 @@ def get_bayes_lr_posterior(prior_var, noise_var, x_matrix, y_matrix, samples=100
     prior_variance = np.diag(prior_var * np.ones(x_matrix.shape[1])) # make it 2 D
     prior_precision = np.linalg.inv(prior_variance)
 
-    joint_precision = prior_precision + x_matrix.T.dot(x_matrix) / noise_var 
+    joint_precision = prior_precision + x_matrix.T.dot(x_matrix) / noise_var
     joint_variance = np.linalg.inv(joint_precision)
     joint_mean = joint_variance.dot(x_matrix.T.dot(y_matrix)) / noise_var
 
@@ -34,11 +34,24 @@ def get_bayes_lr_posterior(prior_var, noise_var, x_matrix, y_matrix, samples=100
 
     return posterior_samples
 
+#michael drafting the code
+# samples either come from prior or posterior distribution
+def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100):
+
+    # calculate predictions and predictive samples
+    predictions = np.dot(samples, x_test_matrix.T)
+
+    predictive_samples = predictions[np.newaxis, :, :] + np.random.normal(0, noise_var**0.5, size=(n, predictions.shape[0],predictions.shape[1]))
+    predictive_samples = predictive_samples.reshape((n * predictions.shape[0], predictions.shape[1]))
+
+    return predictions, predictive_samples
+
+# TO DEPRECATE
 def get_bayes_lr_posterior_predictives(noise_var,posterior_samples,x_test_matrix,samples=100,prior_samples=None):
-    '''Generates posterior predictions and posterior predictive samples given 
-    Bayesian linear regression model coefficent posterior distribution. If prior samples are provided, 
+    '''Generates posterior predictions and posterior predictive samples given
+    Bayesian linear regression model coefficent posterior distribution. If prior samples are provided,
     generates prior predictions and prior predictive samples as well.
-    
+
     posterior_predictions: predicts each X_test obs on each sample coefficient from posterior_samples
     posterior_predictive_samples: samples from each posterior_prediction distribution, randomness comes from noise var
     prior_predictions: predicts each X_test obs on each sample coefficient from prior_samples
@@ -46,20 +59,20 @@ def get_bayes_lr_posterior_predictives(noise_var,posterior_samples,x_test_matrix
 
     '''
     # calculate posterior predictions and predictive samples
-    posterior_predictions = np.dot(posterior_samples, x_test_matrix.T) 
-    
+    posterior_predictions = np.dot(posterior_samples, x_test_matrix.T)
+
     posterior_predictive_samples = posterior_predictions[np.newaxis, :, :] + np.random.normal(0, noise_var**0.5, size=(samples, posterior_predictions.shape[0], posterior_predictions.shape[1]))
-    
+
     posterior_predictive_samples = posterior_predictive_samples.reshape((samples * posterior_predictions.shape[0], posterior_predictions.shape[1]))
 
     # calculate prior predictions and predictive samples
     if prior_samples is None:
         return posterior_predictions, posterior_predictive_samples
     else:
-        prior_predictions = np.dot(prior_samples, x_test_matrix.T) 
+        prior_predictions = np.dot(prior_samples, x_test_matrix.T)
         prior_predictive_samples = prior_predictions[np.newaxis, :, :] + np.random.normal(0, noise_var**0.5, size=(samples, prior_predictions.shape[0], prior_predictions.shape[1]))
         prior_predictive_samples = prior_predictive_samples.reshape((samples * prior_predictions.shape[0], prior_predictions.shape[1]))
-    
+
         return posterior_predictions, posterior_predictive_samples, prior_predictions, prior_predictive_samples
 
 def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title):
@@ -71,7 +84,7 @@ def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title):
 
     # Compute the 50 th percentile of the posterior predictive predictions
     pp_mean = np.mean(posterior_predictive_samples, axis=0)
-    
+
     plt.plot(x_test, pp_mean, color='red') # visualize the mean of the posterior predictive
     plt.fill_between(x_test, pp_upper, pp_lower, color='red', alpha=0.4, label='95% Conf. Interval') # visualize the 95% posterior predictive interval
     plt.scatter(x_train, y_train, color='black', label='training data') # visualize the training data
