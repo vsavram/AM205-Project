@@ -21,6 +21,11 @@ def steepest_descent(objective_function, initial_W, min_step_size=10**(-8), max_
     # Define the gradient function
     gradient = grad(objective_function)
     
+    # Compute the initial MSE
+    mse_value = objective_function(W)
+    # Initialize lists used to store the MSE and weights after each iteration
+    objective_trace,weight_trace = [mse_value],[W.flatten()]
+    
     while np.abs(step_size) > min_step_size and current_iteration < max_iter:
         
         previous_W = W
@@ -41,7 +46,13 @@ def steepest_descent(objective_function, initial_W, min_step_size=10**(-8), max_
         
         current_iteration = current_iteration + 1
     
-    return W
+        # Compute the MSE
+        mse_value = objective_function(W)
+        # Append the MSE and the updated weights to the respective lists
+        objective_trace.append(mse_value)
+        weight_trace.append(W.flatten())
+                           
+    return W,np.array(weight_trace),np.array(objective_trace)
 
 
 # Perform Newton's method and iterate until the step size becomes small enough
@@ -57,6 +68,11 @@ def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_ite
     gradient = grad(objective_function)
     # Define the Hessian function
     hessian_function = hessian(objective_function)
+    
+    # Compute the initial MSE
+    mse_value = objective_function(W)
+    # Initialize lists used to store the MSE and weights after each iteration
+    objective_trace,weight_trace = [mse_value],[W.flatten()]
     
     while np.abs(step_size) > min_step_size and current_iteration < max_iter:
         
@@ -80,8 +96,14 @@ def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_ite
         step_size = np.linalg.norm(step.flatten())
         
         current_iteration = current_iteration + 1
+        
+        # Compute the MSE
+        mse_value = objective_function(W)
+        # Append the MSE and the updated weights to the respective lists
+        objective_trace.append(mse_value)
+        weight_trace.append(W.flatten())
     
-    return W
+    return W,np.array(weight_trace),np.array(objective_trace)
 
 
 # Perform the BFGS algorithm and iterate until the step size becomes small enough
@@ -96,6 +118,11 @@ def BFGS(objective_function, initial_W, min_step_size=10**(-8), max_iter=2000):
     
     # Define the gradient function
     gradient = grad(objective_function)
+    
+    # Compute the initial MSE
+    mse_value = objective_function(W)
+    # Initialize lists used to store the MSE and weights after each iteration
+    objective_trace,weight_trace = [mse_value],[W.flatten()]
     
     while np.abs(step_size) > min_step_size and current_iteration < max_iter:
         
@@ -125,8 +152,14 @@ def BFGS(objective_function, initial_W, min_step_size=10**(-8), max_iter=2000):
         beta = beta + delta_beta
         
         current_iteration = current_iteration + 1
+        
+        # Compute the MSE
+        mse_value = objective_function(W)
+        # Append the MSE and the updated weights to the respective lists
+        objective_trace.append(mse_value)
+        weight_trace.append(W.flatten())
     
-    return W
+    return W,np.array(weight_trace),np.array(objective_trace)
 
 
 # Perform the conjugate gradient method and iterate until the step size becomes small enough
@@ -145,6 +178,11 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
 
     # Set the initial value for s
     s = -W_grad
+    
+    # Compute the initial MSE
+    mse_value = objective_function(initial_W)
+    # Initialize lists used to store the MSE and weights after each iteration
+    objective_trace,weight_trace = [mse_value],[initial_W.flatten()]
     
     while np.abs(step_size) > min_step_size and current_iteration < max_iter:
         
@@ -177,4 +215,10 @@ def conjugate_gradient(objective_function, initial_W, min_step_size=10**(-8), ma
         
         current_iteration = current_iteration + 1
     
-    return W
+        # Compute the MSE
+        mse_value = objective_function(W)
+        # Append the MSE and the updated weights to the respective lists
+        objective_trace.append(mse_value)
+        weight_trace.append(W.flatten())
+        
+    return W,np.array(weight_trace),np.array(objective_trace)
