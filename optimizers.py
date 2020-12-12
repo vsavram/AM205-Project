@@ -73,7 +73,7 @@ def newton_method(objective_function, initial_W, min_step_size=10**(-8), max_ite
     mse_value = objective_function(W)
     # Initialize lists used to store the MSE and weights after each iteration
     objective_trace,weight_trace = [mse_value],[W.flatten()]
-    
+        
     while np.abs(step_size) > min_step_size and current_iteration < max_iter:
         
         previous_W = W
