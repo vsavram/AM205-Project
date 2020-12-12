@@ -179,7 +179,10 @@ class Feedforward:
                     self.objective_trace = self.objective_trace[1:]
                     self.weight_trace = self.weight_trace[1:]
             else:
-                optimal_weights,weight_trace,objective_trace = optimizer(self.objective, weights_init, min_step_size=10**(-8), max_iter=max_iteration)
+                optimal_weights,weight_trace,objective_trace = optimizer(self.objective, 
+                                                                         weights_init, 
+                                                                         min_step_size=10**(-8),
+                                                                         max_iter=max_iteration)
                 local_opt = self.objective(optimal_weights, 1.)
                 if local_opt < optimal_obj:
                     self.weights = optimal_weights.reshape((1, -1))
