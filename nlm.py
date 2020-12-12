@@ -55,8 +55,7 @@ class NLM():
         print("\nDone Training")
 
     def predict(self,X_test,prior=False):
-
-        # make it so this returns prior predictive stuff too
+        """ returns either posterior predictives or prior predictives"""
 
         # forward pass up to last layer
         final_layer = self.ff.forward(self.ff.weights, X_test, final_layer_out=True)
@@ -76,6 +75,28 @@ class NLM():
                                                 self.posterior_samples,
                                                 final_layer.T[:,:,0],
                                                 n=100)
+
+    def get_log_l(self,X_train,Y_train,X_test,Y_test):
+        """ return log likilood of nueral linear model, equivalent to calculating
+        log likilihood of bayesian linear model using final layer basis expansion as
+        X data """
+
+        # forward pass up to last layer
+        X_test_fl = self.ff.forward(self.ff.weights, X_test, final_layer_out=True)
+        X_train_fl = self.ff.forward(self.ff.weights, X_train, final_layer_out=True)
+
+        # ensure all data matrices ares obs by features
+        log_l = bh.bayes_lr_logl(self.prior_var,
+                             self.y_noise_var,
+                             X_train_fl.T[:,:,0],
+                             Y_train.T,
+                             X_test_fl.T[:,:,0],
+                             Y_train.T)
+        return log_l
+
+
+
+
 
 if __name__ == "__main__":
     # test
