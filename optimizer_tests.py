@@ -33,55 +33,55 @@ def test_function3(inputs):
 ### Function 1 ###
 
 # Test steepest descent
-solution = steepest_descent(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = steepest_descent(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test Newton's method
-solution = newton_method(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = newton_method(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test BFGS
-solution = BFGS(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = BFGS(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test the conjugate gradient method
-solution = conjugate_gradient(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = conjugate_gradient(test_function, np.array([1.,3.,5.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 
 ### Function 2 ###
 
 # Test steepest descent
-solution = steepest_descent(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = steepest_descent(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test Newton's method
-solution = newton_method(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = newton_method(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test BFGS
-solution = BFGS(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = BFGS(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test the conjugate gradient method
-solution = conjugate_gradient(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = conjugate_gradient(test_function2, np.array([10.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 
 ### Function 3 ###
 
 # Test steepest descent
-solution = steepest_descent(test_function3, np.array([12., 5.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = steepest_descent(test_function3, np.array([12., 5.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test Newton's method
-solution = newton_method(test_function3, np.array([10., 5.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = newton_method(test_function3, np.array([10., 5.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test BFGS
-solution = BFGS(test_function3, np.array([10., 5.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = BFGS(test_function3, np.array([10., 5.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
 
 # Test the conjugate gradient method
-solution = conjugate_gradient(test_function3, np.array([10.,5.]), min_step_size=10**(-8), max_iter=2000)
-print(solution)
+solution, weight_trace, objective_trace = conjugate_gradient(test_function3, np.array([10.,5.]), min_step_size=10**(-8), max_iter=2000)
+print(f"The optimal solution is {solution}. The algorithm took {len(objective_trace)-1} iterations.")
