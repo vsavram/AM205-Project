@@ -62,7 +62,14 @@ def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100):
 
     return predictions, predictive_samples
 
-def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title,ylim = [-150,150],gen_func=utils.default_gen_func):
+def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title_text, multi=None, ylim = [-150,150],gen_func=utils.default_gen_func):
+    
+    if multi ==None:
+        fig, ax = plt.subplots(1, 1, figsize=(10,10))
+    
+    else:
+        ax = multi
+        
     # Compute the 97.5 th percentile of the posterior predictive predictions
     pp_upper = np.percentile(posterior_predictive_samples, 97.5, axis=0)
 
@@ -72,15 +79,19 @@ def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title,yli
     # Compute the 50 th percentile of the posterior predictive predictions
     pp_mean = np.mean(posterior_predictive_samples, axis=0)
 
-    plt.plot(x_test, pp_mean, color='red') # visualize the mean of the posterior predictive
-    plt.fill_between(x_test, pp_upper, pp_lower, color='red', alpha=0.4, label='95% Conf. Interval') # visualize the 95% posterior predictive interval
-    plt.scatter(x_train, y_train, color='black', label='training data') # visualize the training data
+    ax.plot(x_test, pp_mean, color='blue', label = 'mean prediction') # visualize the mean of the posterior predictive
+    ax.fill_between(x_test, pp_upper, pp_lower, color='blue', alpha=0.3, label='95% Conf. Interval') # visualize the 95% posterior predictive interval
+    ax.scatter(x_train, y_train, color='red', label='training data') # visualize the training data
     
-    plt.plot(x_test,[gen_func(x) for x in x_test], color = 'black', label = 'true function')
-    plt.legend()
-    plt.title(title)
-    plt.ylim(ylim)
-    plt.show()
+    ax.plot(x_test,[gen_func(x) for x in x_test], color = 'black', label = 'true function')
+    ax.set_title(title_text)
+    ax.set_ylim(ylim)
+    
+    if multi == None:
+        ax.legend()
+        return fig
+    else:
+        return ax
     
 
 
