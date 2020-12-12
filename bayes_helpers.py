@@ -8,6 +8,7 @@ import numpy
 import matplotlib.pyplot as plt
 import sys
 import math
+import utils
 
 
 def get_prior_samples(x_matrix, prior_var, prior_mean=0, samples=100):
@@ -61,7 +62,7 @@ def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100):
 
     return predictions, predictive_samples
 
-def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title):
+def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title,ylim = [-150,150],gen_func=utils.default_gen_func):
     # Compute the 97.5 th percentile of the posterior predictive predictions
     pp_upper = np.percentile(posterior_predictive_samples, 97.5, axis=0)
 
@@ -74,10 +75,13 @@ def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title):
     plt.plot(x_test, pp_mean, color='red') # visualize the mean of the posterior predictive
     plt.fill_between(x_test, pp_upper, pp_lower, color='red', alpha=0.4, label='95% Conf. Interval') # visualize the 95% posterior predictive interval
     plt.scatter(x_train, y_train, color='black', label='training data') # visualize the training data
+    
+    plt.plot(x_test,[gen_func(x) for x in x_test], color = 'black', label = 'true function')
     plt.legend()
     plt.title(title)
-    plt.ylim([0.9*y_train.min(), 1.1*y_train.max()])
+    plt.ylim(ylim)
     plt.show()
+    
 
 
 
