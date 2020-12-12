@@ -1,8 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import config
 
 
-def generate_data(number_of_points=100, noise_variance=9, region_size = 2, gap_size=4, boundary_size = 1):
+def generate_data(number_of_points=config.training_sample_size,
+                noise_variance=config.y_noise_variance,
+                region_size = 2,
+                gap_size=4,
+                boundary_size = 1):
     '''
     Function for generating toy regression data
 
@@ -12,7 +17,7 @@ def generate_data(number_of_points=100, noise_variance=9, region_size = 2, gap_s
     with a gap (default size = 1) in the middle of the train set and a boundary (default size is 2) at the left & right extremes for the test set
 
     '''
-    
+
     x_train_min = - gap_size/2 - region_size
     x_train_max = gap_size/2 + region_size
     #training x
@@ -37,7 +42,7 @@ def run_toy_nn(nn_model,architecture,params,random,x_train,y_train,x_test):
     #predict on the test x-values
     y_test_pred = nn.forward(nn.weights, x_test)
     print(x_test.flatten().reshape(-1,1).shape)
-    
+
     #visualize the function learned by the neural network
     plt.scatter(x_train.flatten(), y_train.flatten(), color='black', label='data')
     plt.plot(x_test.flatten(), y_test_pred.flatten(), color='red', label='learned neural network function')
