@@ -24,7 +24,7 @@ opt_params = {'step_size':1e-3,
 
 random_seed = np.random.RandomState(0)
 
-real_max_iteration = 5000
+real_max_iteration = 3500
 
 ########################
 #### LUNA SPECIFIC  ####
