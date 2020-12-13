@@ -109,8 +109,17 @@ class LUNA(NLM):
         #JACK
         # uses a constant step size set in the constructor
         if self.grad_func_specs:
-            if "fixed" in self.grad_func_specs:
-                eps = self.grad_func_specs["fixed"]*np.ones(x.shape[1])
+            if 'fixed' in self.grad_func_specs:
+                eps = self.grad_func_specs['fixed']*np.ones(x.shape[1])
+            else:    
+            #create one epsilon for each observation
+                eps = np.random.normal(0,0.1,size=x.shape[1])
+                
+            if 'random' in self.grad_func_specs:
+                random_indices = np.random.randint(0,x.shape[1], round(self.grad_func_specs['random']*x.shape[1])) # where, grad_func_specs['random'] equals 
+                                                                                                              # proportion of indices we want to sample (0 to 1)
+                x = x[:,random_indices]
+                eps = np.random.normal(0,0.1,size=x.shape[1])
             
         else:    
         #create one epsilon for each observation

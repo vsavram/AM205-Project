@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import config
+import random
 
 #function relating x and y
 default_gen_func = lambda x: (x**3)
 
-def generate_data(number_of_points=config.training_sample_size,
+def generate_data(random_seed,
+                  number_of_points=config.training_sample_size,
                 noise_variance=config.y_noise_variance,
                 region_size = 2,
                 gap_size=4,
@@ -13,13 +15,13 @@ def generate_data(number_of_points=config.training_sample_size,
                 f = default_gen_func):
     '''
     Function for generating toy regression data
-
-
+    
+    
     Generates data from the function y = f(x) + epsilon = x**3 + epsilon with epsilon~N(0, config.y_noise_variance) by default
     with a gap (default size = 1) in the middle of the train set and a boundary (default size is 2) at the left & right extremes for the test set
-
+    
     '''
-
+    random.seed(random_seed)
     x_train_min = - gap_size/2 - region_size
     x_train_max = gap_size/2 + region_size
     #training x
