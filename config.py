@@ -1,6 +1,8 @@
 from autograd import numpy as np
 
 training_sample_size = 100
+training_seed = 124
+valid_seed = 32847
 
 ######################
 ### Model Params
