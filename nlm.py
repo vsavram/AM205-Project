@@ -1,3 +1,5 @@
+# primary authors: michael and elaine
+
 from autograd import numpy as np
 from autograd import grad
 from autograd.misc.optimizers import adam, sgd

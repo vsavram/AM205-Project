@@ -1,3 +1,5 @@
+# primary author: wei wei pan, modified by Michael and Elaine and Victor
+
 from autograd import numpy as np
 from autograd import grad
 from autograd.misc.optimizers import adam, sgd

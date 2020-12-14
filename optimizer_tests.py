@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+#primary author: victor 
+
 from autograd import numpy as np
 from autograd import grad
 from autograd import hessian

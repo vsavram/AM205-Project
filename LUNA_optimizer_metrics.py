@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# primary author: victor
 
 # Import standard libraries
 from autograd import numpy as np

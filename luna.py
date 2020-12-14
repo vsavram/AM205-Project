@@ -1,3 +1,9 @@
+
+
+
+
+#Primary Authors: Michael and Elaine
+
 # import standard libraries
 from autograd import numpy as np
 from autograd import grad

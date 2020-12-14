@@ -1,3 +1,5 @@
+#primary authors: michael and elaine
+
 from autograd import numpy as np
 
 training_sample_size = 100
