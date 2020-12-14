@@ -8,6 +8,7 @@ import pandas as pd
 import numpy
 import matplotlib.pyplot as plt
 import sys
+import math
 
 # import our libraries
 # from utils import cos_sim_sq
@@ -116,8 +117,9 @@ class LUNA(NLM):
                 eps = np.random.normal(0,0.1,size=x.shape[1])
                 
             if 'random' in self.grad_func_specs:
-                random_indices = np.random.randint(0,x.shape[1], round(self.grad_func_specs['random']*x.shape[1])) # where, grad_func_specs['random'] equals 
+                random_indices = np.random.randint(0,x.shape[1], math.ceil(self.grad_func_specs['random']*x.shape[1])) # where, grad_func_specs['random'] equals 
                                                                                                               # proportion of indices we want to sample (0 to 1)
+                
                 x = x[:,random_indices]
                 eps = np.random.normal(0,0.1,size=x.shape[1])
             
